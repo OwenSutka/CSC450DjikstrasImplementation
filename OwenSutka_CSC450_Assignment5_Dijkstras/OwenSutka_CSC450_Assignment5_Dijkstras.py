@@ -78,8 +78,28 @@ else:
 
 # Take in initial node
 if(len(sys.argv) >= 3):
-    serverPort = int(sys.argv[2])
+    initNode = int(sys.argv[2])
 else:
     warningChoose(2)
-    serverPort = -1
+    initNode = -1
+
+if(inputFile == -1):
+    # Add-on function
+    while(runningUI == True):
+        programNum = -1
+        try:
+            programNum = int(input("\n\nWhat Program would you like to run?\n0. Exit\n1. Set Server IP\n2. Set Server Port\n3. Set Number of Pings\n4. Set Probability of Success\n5. Set Socket Timeout\n6. Run Single Ping Program\n7. Run Full Ping Program\n8. Print most Recent Statistics\n9. Send Statistics to Text File\n\n"))
+        except ValueError:
+            errorChoose(4)
+            programNum = -1
+        if(programNum == -1):
+            errorChoose(1)
+        else:
+            runProgram(programNum)
+elif(initNode == -1):
+    # Normal Function
+    print("Pull this print from the pdf")
+else:
+    # advanced function
+    print("Add this last when all functions are defined")
 
