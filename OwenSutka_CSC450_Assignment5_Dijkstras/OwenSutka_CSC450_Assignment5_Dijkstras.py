@@ -64,22 +64,22 @@ def errorChoose(errorInt=-1):
     # You can choose whatever error you need and it will produce the relevant result
     errorCase = {
         -1: "Unknown Error",
-        1:  "",
-        2:  "",
-        3:  "",
+        1:  "VALUE ERROR: The input provided was in a different format than expected.",
+        2:  "NODE NAME ERROR: Node Name specified is not in list of known nodes.",
+        3:  "INPUT FILE ERROR: No input file specified. Cannot create node list or edge list.",
         4:  "",
         5:  ""
     }
     # Prints an error statement
-    print("\nERROR: {}\n".format(errorCase.get(errorInt, "Unknown Error at errorChoose")))
+    print("\n{}\n".format(errorCase.get(errorInt, "Unknown Error at errorChoose")))
     return
 
 def warningChoose(warningInt=-1):
     # You can choose whatever warning you need and it will produce the relevant result
     warningCase = {
-        -1: "Unknown Warning",
-        1:  "Input file unspecified. Will be entering Generic Mode.\n",
-        2:  "No initial node specified on startup. Will need to be specified...\n",
+        -1: "Unknown Warning...",
+        1:  "Input file unspecified. Will be entering Generic Mode...",
+        2:  "No initial node specified on startup. Will need to be specified...",
         3:  ""
     }
     # Prints an warning statement
@@ -91,7 +91,22 @@ def warningChoose(warningInt=-1):
 # Functions
 ############################################################
 # This function will take the csv file name as input and will find it and assign some of the global variables some values
-def processCSV():
+def processCSV(inputFile):
+    if(inputFile == -1):
+        errorChoose(3)
+        while(inputFile == -1):
+            try:
+                inputFile = str(input("Please, provide the input file's name: "))
+                break
+            except ValueError:
+                inputFile = -1
+                errorChoose(1)
+    with open(inputFile, 'rb') as csvfile:
+        spamreader = csv.reader(csvfile,delimiter=' ',quotechar='|')
+        for row in spamreader:
+            print(', '.join(row))
+
+
     print("processing the CSV")
 
 # This function chooses a node and then returns that value
@@ -103,20 +118,23 @@ def chooseNode():
             node = str(input("\nPlease, provide the node's name: "))
             break
         except ValueError:
+            node = ""
             errorChoose(1)
-    # Check all nodes for the value specified
-    for i in range(0, len(nodeNames)):
-        if(node == nodeNames[i]):
-            finalNode = node
-            break
-        else:
-            finalNode = -1
-    # runs an error if the value specified is not in the list of nodes
-    if(finalNode == -1):
-        finalNode = ""
-        errorChoose(2)
-    # return the final node
-    return finalNode
+
+        # Check all nodes for the value specified
+        for i in range(0, len(nodeNames)):
+            if(node == nodeNames[i]):
+                finalNode = node
+                # return the final node
+                return finalNode
+            else:
+                finalNode = -1
+        # runs an error if the value specified is not in the list of nodes
+        if(finalNode == -1):
+            finalNode = ""
+            errorChoose(2)
+
+
 ############################################################
 
 
@@ -144,7 +162,7 @@ if(inputFile == -1):
         try:
             programNum = int(input("\n\nWhat Program would you like to run?\n0. Exit\n1. Set CSV file\n2. Set Starting Node\n3. Find Shortest Paths of Set Node\n4. Find Shortest Paths of all Nodes/n/n"))
         except ValueError:
-            errorChoose(4)
+            errorChoose(1)
             programNum = -1
         if(programNum == -1):
             errorChoose(1)
