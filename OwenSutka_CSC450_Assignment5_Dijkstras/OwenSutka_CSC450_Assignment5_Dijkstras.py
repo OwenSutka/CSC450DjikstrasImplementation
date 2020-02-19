@@ -94,6 +94,7 @@ def warningChoose(warningInt=-1):
 def processCSV(inputFile):
     # Initialize the rows from the csv
     dataRows = []
+    tempDict = {}
     # make sure to alter the global and not local variables for accessing later
     global nodeNames, edgeNamesWeights
     # Check if there is an input file, if not ask for one
@@ -120,7 +121,13 @@ def processCSV(inputFile):
                 edgeName = str(dataRows[0][i] + dataRows[0][j])
                 edgeCost = int(dataRows[i][j])
                 edgeNamesWeights[edgeName] = edgeCost
-
+                # This had to be used because python ONLY uses pointers to values and it couldn't iterate a dictionary that changes size every iteration
+                tempDict[edgeName] = edgeCost
+        # now make more robust and easier to use by placing the reverse name for each node
+        for i in tempDict:
+            if(i[0] != i[1]):
+                edgeNamesWeights[str(i[1]+i[0])] = edgeNamesWeights[i]
+                
 
 # This function chooses a node and then returns that value
 def chooseNode():
@@ -129,16 +136,15 @@ def chooseNode():
     while(1):
         try:
             node = str(input("\nPlease, provide the node's name: "))
-            break
         except ValueError:
             node = ""
             errorChoose(1)
-
         # Check all nodes for the value specified
         for i in range(0, len(nodeNames)):
             if(node == nodeNames[i]):
                 finalNode = node
                 # return the final node
+                print(finalNode)
                 return finalNode
             else:
                 finalNode = -1
@@ -147,8 +153,42 @@ def chooseNode():
             finalNode = ""
             errorChoose(2)
 
-def shortestPathTree(node):
-    print("shortest Path Tree")
+def shortestPathTree(startNode):
+    global nodeNames, edgeNamesWeights
+    print("Shortest Path Tree for node {}: ".format(startNode))
+    # 1. Mark all nodes as unvisited. Create a set of all the unvisited nodes called the unvisitedSet
+    nodeSet = nodeNames
+    # 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current
+    nodeSetWeights = []
+    visited = []
+    traverseWeight = 0
+    currentNode = startNode
+    for i in range(0, len(nodeSet)):
+        if(nodeSet[i] == startNode):
+            nodeSetWeights.append(0)
+        else:
+            nodeSetWeights.append(9999)
+        visited = False
+    # probably need to repeat for all nodes
+    # For the current node, consider all of its unvisited neighbors and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one
+    for i in range(0, len(nodeSet)):
+        node1 = currentNode
+        node2 = nodeSet[i]
+        edgeName = str(node1 + node2)
+        edgeWeight = int(edgeNamesWeights[edgeName]) + traverseWeight
+        if(edgeWeight < nodeSetWeights[i]):
+            nodeSetWeights[i] = edgeWeight
+    for i in range(0, len(nodeSet)):
+        lowest = 9999
+        if(nodeSet[i] == currentNode):
+            visited = True
+        else:
+            if()
+    currentNode = nextNode
+    print(nodeSetWeights)
+
+
+
 
 
 def leastCosts(nodeChoice):
@@ -178,9 +218,8 @@ if(inputFile == -1):
     while(runningUI == True):
         programNum = -1
         try:
-            programNum = int(input("\n\nWhat Program would you like to run?\n0. Exit\n1. Set CSV file\n2. Set Starting Node\n3. Find Shortest Paths of Set Node\n4. Find Shortest Paths of all Nodes/n/n"))
+            programNum = int(input("\n\nWhat Program would you like to run?\n0. Exit\n1. Set CSV file\n2. Set Starting Node\n3. Find Shortest Paths of Set Node\n4. Find Shortest Paths of all Nodes\n5. Find Shortest Parse Tree\n\n"))
         except ValueError:
-            errorChoose(1)
             programNum = -1
         if(programNum == -1):
             errorChoose(1)
@@ -191,7 +230,7 @@ elif(initNode == -1):
     processCSV(inputFile)
     nodeChoice = chooseNode()
     shortestPathTree(nodeChoice)
-    leastCosts(nodeChoice)
+    #leastCosts(nodeChoice)
 else:
     # advanced function
     print("Add this last when all functions are defined")
