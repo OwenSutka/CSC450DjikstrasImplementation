@@ -42,6 +42,7 @@
 
 # Libraries
 import sys
+import csv
 
 # Constants
 
@@ -153,7 +154,8 @@ elif(initNode == -1):
     # Normal Function
     processCSV(inputFile)
     nodeChoice = chooseNode()
-    print("Pull this print from the pdf")
+    shortestPathTree(nodeChoice)
+    leastCosts(nodeChoice)
 else:
     # advanced function
     print("Add this last when all functions are defined")
