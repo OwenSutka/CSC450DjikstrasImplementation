@@ -48,9 +48,9 @@ import csv
 
 
 # Global Variables
-global nodeNames, edgeNamesWeights, nodeChoice
+global nodeNames, edgeNamesWeights
 nodeNames = []
-edgeNamesWeights = {} # format is uu:0,uv:7,vu:7 ......
+edgeNamesWeights = {} # format is uu:0,uv:7,ux:3 ......
 nodeChoice = ""
 
 # Variables
@@ -92,6 +92,11 @@ def warningChoose(warningInt=-1):
 ############################################################
 # This function will take the csv file name as input and will find it and assign some of the global variables some values
 def processCSV(inputFile):
+    # Initialize the rows from the csv
+    dataRows = []
+    # make sure to alter the global and not local variables for accessing later
+    global nodeNames, edgeNamesWeights
+    # Check if there is an input file, if not ask for one
     if(inputFile == -1):
         errorChoose(3)
         while(inputFile == -1):
@@ -101,13 +106,21 @@ def processCSV(inputFile):
             except ValueError:
                 inputFile = -1
                 errorChoose(1)
-    with open(inputFile, 'rb') as csvfile:
-        spamreader = csv.reader(csvfile,delimiter=' ',quotechar='|')
-        for row in spamreader:
-            print(', '.join(row))
+    # open and parse data from file so that we have every edge and their weights
+    with open(inputFile, 'rt') as csvfile:
+        data = csv.reader(csvfile)
+        for row in data:
+            dataRows.append(row)
+        # get the node names
+        nodeNames = dataRows[0][1:len(dataRows[0])]
+        # from each column pull the weight for each other node and itself. Works and is clean
+        for i in range(1, len(dataRows[0])):
+            for j in range(i,len(dataRows[0])):
+                # Including edge cost and name in the dictionary
+                edgeName = str(dataRows[0][i] + dataRows[0][j])
+                edgeCost = int(dataRows[i][j])
+                edgeNamesWeights[edgeName] = edgeCost
 
-
-    print("processing the CSV")
 
 # This function chooses a node and then returns that value
 def chooseNode():
@@ -134,7 +147,12 @@ def chooseNode():
             finalNode = ""
             errorChoose(2)
 
+def shortestPathTree(node):
+    print("shortest Path Tree")
 
+
+def leastCosts(nodeChoice):
+    print("least costs paths")
 ############################################################
 
 
