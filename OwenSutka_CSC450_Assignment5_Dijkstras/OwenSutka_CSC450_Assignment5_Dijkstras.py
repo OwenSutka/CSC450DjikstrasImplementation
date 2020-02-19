@@ -8,24 +8,36 @@
 # Purpose: To illustrate how two computers communicate over
 #           UDP and how packets can be dropped
 ############################################################
-# Requirements for client side code:
-############################################################
-# 1. Sets socket timeout as 1 second. settimeout() socket
-#    function is your friend.
-# 2. Sends multiple (n) UDP segments with ping message to
-#    server with specified IP address and port number. 
-# 3. Receives message back from server and calculates
-#    message round trip time in milliseconds.
-# 4. Displays server response if segment was received.
-# 5. Displays Request time out string if segment was lost.
-#    Segment is considered lost if the timeout is up.
-# 6. Displays ping statistics information (number of sent,
-#    received, lost segments, and loss percentage).
-# 7. Displays approximate round trip times in milliseconds
-#    (minimum, maximum, and average RTT).
-# 8. Gets server IP address, server port number and number
-#    (n) of ping packets to send as a command line arguments.
 
+# Requirements for Dijkstra's code:
+############################################################
+# 1. First, your program has to read the costs of all links 
+# in a given network from “topology.csv” file (provided
+# on Moodle). In this file, the first row and the first column 
+# refer to the names of the nodes (from u to z). Other cells 
+# show the cost of links between the row node and the column 
+# node (meaning two nodes are neighbors). The cost value 
+# “9999” indicates an infinity cost (meaning two nodes are 
+# not neighbors).
+# 2. Your program has to take the name of the topology file 
+# as a command line argument.
+#       python dijkstras_algorithm.py topology.csv
+# 3. Next, your program has to take a node’s name as an 
+# input from a command line and print the shortest path 
+# tree and the cost of least-cost paths for this node..
+# 4. The computation of the shortest path tree and the costs 
+# of least-cost paths has to be implemented with Dijkstra’s 
+# algorithm.
+# 5. Please, comment your code thoroughly, explaining the 
+# steps of Dijkstra’s algorithm and the overall flow of your 
+# program (e.g. parsing of input file, generating shortest 
+# path tree output, etc.) In addition, please, properly 
+# specify any sources you have used.
+# 6. Create a “readme.pdf” in which specify Python version 
+# you have used, instructions of how to run your program, 
+# and screenshots of some sample program runs.
+# 7. Submit zipped folder with your Python source code and 
+# the readme.pdf file on Moodle.
 ############################################################
 
 # Libraries
@@ -34,7 +46,14 @@ import sys
 # Constants
 
 
+# Global Variables
+global nodeNames, edgeNamesWeights, nodeChoice
+nodeNames = []
+edgeNamesWeights = {} # format is uu:0,uv:7,vu:7 ......
+nodeChoice = ""
+
 # Variables
+
 
 
 
@@ -54,7 +73,6 @@ def errorChoose(errorInt=-1):
     print("\nERROR: {}\n".format(errorCase.get(errorInt, "Unknown Error at errorChoose")))
     return
 
-
 def warningChoose(warningInt=-1):
     # You can choose whatever warning you need and it will produce the relevant result
     warningCase = {
@@ -66,9 +84,43 @@ def warningChoose(warningInt=-1):
     # Prints an warning statement
     print("\nWARNING: {}\n".format(warningCase.get(warningInt, "Unknown Error at warningChoose")))
     return
-
 ############################################################
 
+
+# Functions
+############################################################
+# This function will take the csv file name as input and will find it and assign some of the global variables some values
+def processCSV():
+    print("processing the CSV")
+
+# This function chooses a node and then returns that value
+def chooseNode():
+    finalNode = -1
+    # while loop to force the person to choose a valid combo for a node
+    while(1):
+        try:
+            node = str(input("\nPlease, provide the node's name: "))
+            break
+        except ValueError:
+            errorChoose(1)
+    # Check all nodes for the value specified
+    for i in range(0, len(nodeNames)):
+        if(node == nodeNames[i]):
+            finalNode = node
+            break
+        else:
+            finalNode = -1
+    # runs an error if the value specified is not in the list of nodes
+    if(finalNode == -1):
+        finalNode = ""
+        errorChoose(2)
+    # return the final node
+    return finalNode
+############################################################
+
+
+# General input and functionality
+############################################################
 # Take in csv file
 if(len(sys.argv) >= 2):
     inputFile = str(sys.argv[1])
@@ -85,10 +137,11 @@ else:
 
 if(inputFile == -1):
     # Add-on function
+    runningUI = True
     while(runningUI == True):
         programNum = -1
         try:
-            programNum = int(input("\n\nWhat Program would you like to run?\n0. Exit\n1. Set Server IP\n2. Set Server Port\n3. Set Number of Pings\n4. Set Probability of Success\n5. Set Socket Timeout\n6. Run Single Ping Program\n7. Run Full Ping Program\n8. Print most Recent Statistics\n9. Send Statistics to Text File\n\n"))
+            programNum = int(input("\n\nWhat Program would you like to run?\n0. Exit\n1. Set CSV file\n2. Set Starting Node\n3. Find Shortest Paths of Set Node\n4. Find Shortest Paths of all Nodes/n/n"))
         except ValueError:
             errorChoose(4)
             programNum = -1
@@ -98,8 +151,10 @@ if(inputFile == -1):
             runProgram(programNum)
 elif(initNode == -1):
     # Normal Function
+    processCSV(inputFile)
+    nodeChoice = chooseNode()
     print("Pull this print from the pdf")
 else:
     # advanced function
     print("Add this last when all functions are defined")
-
+############################################################
