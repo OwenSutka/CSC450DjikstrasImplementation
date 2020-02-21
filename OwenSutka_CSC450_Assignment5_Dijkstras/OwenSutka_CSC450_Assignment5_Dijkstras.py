@@ -144,7 +144,6 @@ def chooseNode():
             if(node == nodeNames[i]):
                 finalNode = node
                 # return the final node
-                print(finalNode)
                 return finalNode
             else:
                 finalNode = -1
@@ -153,39 +152,54 @@ def chooseNode():
             finalNode = ""
             errorChoose(2)
 
-def shortestPathTree(startNode):
+def dijkstras(startNode):
+    nString = []
+    weights = {}
+    addOnWeight = 0
     global nodeNames, edgeNamesWeights
-    print("Shortest Path Tree for node {}: ".format(startNode))
-    # 1. Mark all nodes as unvisited. Create a set of all the unvisited nodes called the unvisitedSet
-    nodeSet = nodeNames
-    # 2. Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes. Set the initial node as current
-    nodeSetWeights = []
-    visited = []
-    traverseWeight = 0
+    tempNodeNames = nodeNames
+    visited = {}
+    for i in range(0, len(tempNodeNames)):
+        weights[tempNodeNames[i]] = 9999
+        visited[tempNodeNames[i]] = False
+        
+
     currentNode = startNode
-    for i in range(0, len(nodeSet)):
-        if(nodeSet[i] == startNode):
-            nodeSetWeights.append(0)
+    nextNode = currentNode
+    weights[currentNode] = [0, currentNode]
+    while(1):
+        minPath = 9999      # set min path to be able to reduce it in the future
+        visited[currentNode] = True     # set the current nodes visited state to true
+        nString.append(currentNode)     # append the current node to the nstring to get order of visiting
+        for item in edgeNamesWeights.items():
+            oldWeight = 9999
+            edgeName = item[0]      # finds that we will determine if it is from the node
+            if((edgeName[0] == currentNode) and (visited[edgeName[1]] == False)):       # check if the node the edge is connected to is visited and that the start of the edge is the current node
+                tempWeight = int(item[1]) + addOnWeight     # set a temporary weight for the traversal of the specified edge
+                otherNodeName = edgeName[1]     # get the end node's name
+                nodeInfo = weights[otherNodeName[0]]
+                if (nodeInfo == 9999):
+                    oldWeight = nodeInfo
+                else:
+                    oldWeight = nodeInfo[0]
+                if(tempWeight < oldWeight):
+                    weights[edgeName[1]] = [tempWeight, edgeName[0]]
+        print(currentNode)
+        print(weights)
+        for item in weights.items():
+            if(item[1] != 9999):
+                print(int(item[1][0]))
+                if (int(item[1][0]) < minPath and visited[item[0]] == False):
+                    minPath = int(item[1][0])
+                    nextNode = item[0]
+        if (nextNode == currentNode):
+            return nString, weights
         else:
-            nodeSetWeights.append(9999)
-        visited = False
-    # probably need to repeat for all nodes
-    # For the current node, consider all of its unvisited neighbors and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one
-    for i in range(0, len(nodeSet)):
-        node1 = currentNode
-        node2 = nodeSet[i]
-        edgeName = str(node1 + node2)
-        edgeWeight = int(edgeNamesWeights[edgeName]) + traverseWeight
-        if(edgeWeight < nodeSetWeights[i]):
-            nodeSetWeights[i] = edgeWeight
-    for i in range(0, len(nodeSet)):
-        lowest = 9999
-        if(nodeSet[i] == currentNode):
-            visited = True
-        else:
-            if()
-    currentNode = nextNode
-    print(nodeSetWeights)
+            currentNode = nextNode
+            newInfo = weights[currentNode]
+            addOnWeight = newInfo[0]
+        print(minPath)
+        print(nextNode)
 
 
 
@@ -229,7 +243,7 @@ elif(initNode == -1):
     # Normal Function
     processCSV(inputFile)
     nodeChoice = chooseNode()
-    shortestPathTree(nodeChoice)
+    tree, paths = dijkstras(nodeChoice)
     #leastCosts(nodeChoice)
 else:
     # advanced function
